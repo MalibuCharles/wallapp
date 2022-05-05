@@ -1,15 +1,38 @@
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import render
 
 from .models import Post
 
 # Create your views here.
 def home_view(request, *args, **kwargs):
-    return HttpResponse("<h1>Hello World</h1>")
+    return render(request, "pages/home.html", context={}, status=200)
+
+def post_list_view(request, *args, **kwargs):
+    qs = Post.objects.all()
+    posts_list = [{"id": x.id, "content": x.content} for x in qs]
+    data = {
+        "response": posts_list
+    }
+    return JsonResponse(data)
 
 def post_detail_view(request, post_id, *args, **kwargs):
+    """
+    REST API VIEW
+    Consume by JavaScript
+    return json data
+    """
+    
+    data = {
+        "id": post_id,
+    }
+
+    status = 200
+
     try:
         obj = Post.objects.get(id=post_id)
+        data["content"] = obj.content
     except:
-        return Http404
-    return HttpResponse(f"<h1>Hello {post_id} - {obj.content} </h1>")
+        data['message'] = "Not found"
+        status = 404
+
+    return JsonResponse(data, status=status)
