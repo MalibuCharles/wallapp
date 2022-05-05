@@ -4,6 +4,7 @@
         -> Image - Media Storage Server
     -> Delete
     -> Sharing
+    -> Liking
 
 2. Users
     -> Register
